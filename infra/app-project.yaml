@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: infra-structure
+  namespace: argo-cd  # Namespace where AppProject resource is created (where Argo CD is installed)
+spec:
+  description: Infra-structure components managed by Argo CD
+  sourceRepos:
+    - '*'  # Allow all Git repositories (can be restricted to specific repo if needed)
+  destinations:
+    - namespace: '*'  # Target namespaces this AppProject can manage (where Applications can deploy)
+      server: '*'  # Allow all namespaces and clusters
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+

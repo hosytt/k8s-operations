@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress-nginx
+  namespace: argo-cd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: infra-structure
+  # Use Argo CD 2.6+ Multiple Sources (Helm repository + Git resources)
+  sources:
+    - repoURL: https://kubernetes.github.io/ingress-nginx
+      chart: ingress-nginx
+      targetRevision: 4.14.1
+      helm:
+        values: |
+          controller:
+            kind: DaemonSet
+            hostNetwork: true
+            dnsPolicy: ClusterFirstWithHostNet
+            service:
+              enabled: false
+            resources:
+              requests:
+                cpu: 2000m
+                memory: 2Gi
+              limits:
+                cpu: "4000m"
+                memory: 4Gi
+            config:
+              use-forwarded-headers: "true"
+              log-format-escape-json: "true"
+              log-format-upstream: '{"time": "$time_iso8601", "remote_addr": "$remote_addr", "x-forward-for": "$proxy_add_x_forwarded_for", "request_id": "$req_id", "remote_user": "$remote_user", "bytes_sent": $bytes_sent, "request_time": $request_time, "status": $status, "vhost": "$host", "request_proto": "$server_protocol", "path": "$uri", "request_query": "$args", "request_length": $request_length, "duration": $request_time,"method": "$request_method", "http_referrer": "$http_referer", "http_user_agent": "$http_user_agent", "upstream_name": "$proxy_upstream_name", "upstream_addr": "$upstream_addr"}'
+            metrics:
+              enabled: false
+          defaultBackend:
+            enabled: true
+    - repoURL: git@github.com:hosytt/k8s-operations.git
+      path: infra/ingress-nginx
+      targetRevision: main
+      kustomize: {}  # Use kustomization.yaml (manage resources only)
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingress-nginx
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - ApplyOutOfSyncOnly=true
+

@@ -1,0 +1,15 @@
+server:
+  # Assign external IP via MetalLB
+  service:
+    type: ClusterIP       # Default ClusterIP -> LoadBalancer
+    servicePortHttp: 80      # HTTP Service Port
+
+  # Apply --insecure flag to server to disable TLS
+  insecure: true
+  extraArgs:
+    - --insecure
+
+  # Ingress is disabled (can be enabled later with ingress.enabled=true)
+  ingress:
+    enabled: false
+
