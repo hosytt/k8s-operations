@@ -1,9 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - resources/namespace.yaml
-  - resources/deployment.yaml
-  - resources/service.yaml
+- resources/namespace.yaml
+- resources/deployment.yaml
+- resources/service.yaml
 images:
-  - name: ghcr.io/hosytt/k8s-operations-app
-    newTag: latest
+- name: ghcr.io/hosytt/k8s-operations-app
+  newName: ghcr.io/hosytt/k8s-operations-app
+  newTag: 0.0.2
