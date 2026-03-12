@@ -28,7 +28,7 @@ spec:
               enabled: false
           defaultBackend:
             enabled: true
-    - repoURL: git@github.com:hosytt/k8s-operations.git
+    - repoURL: https://github.com/hosytt/k8s-operations.git
       path: infra/ingress-nginx
       targetRevision: main
       kustomize: {}  # Use kustomization.yaml (manage resources only)

@@ -13,7 +13,7 @@ spec:
       targetRevision: 9.1.45
       helm:
         values: |
-    - repoURL: git@github.com:hosytt/k8s-operations.git
+    - repoURL: https://github.com/hosytt/k8s-operations.git
       path: infra/reflector
       targetRevision: main
   destination:

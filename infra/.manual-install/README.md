@@ -63,7 +63,7 @@ metadata:
 type: Opaque
 stringData:
   name: k8s-operations
-  url: git@github.com:hosytt/k8s-operations.git
+  url: https://github.com/hosytt/k8s-operations.git
   insecure: "true"
   sshPrivateKey: |
     -----BEGIN OPENSSH PRIVATE KEY-----

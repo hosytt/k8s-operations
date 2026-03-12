@@ -65,7 +65,7 @@ spec:
             service:
               type: ClusterIP
               port: 9093
-    - repoURL: git@github.com:hosytt/k8s-operations.git
+    - repoURL: https://github.com/hosytt/k8s-operations.git
       path: infra/prometheus-community
       targetRevision: main
       kustomize: {}  # Use kustomization.yaml (manage resources only)

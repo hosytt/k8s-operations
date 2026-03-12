@@ -18,7 +18,7 @@ spec:
             namespace: sealed-secrets
             serviceName: sealed-secrets
           disableLoadSecrets: true
-    - repoURL: git@github.com:hosytt/k8s-operations.git
+    - repoURL: https://github.com/hosytt/k8s-operations.git
       path: infra/sealed-secrets-web
       targetRevision: main
       kustomize: {}  # Use kustomization.yaml (manage resources only)

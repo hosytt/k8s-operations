@@ -29,7 +29,7 @@ spec:
               port: 80
           preUpgradeChecker:
             jobEnabled: false
-    - repoURL: git@github.com:hosytt/k8s-operations.git
+    - repoURL: https://github.com/hosytt/k8s-operations.git
       path: infra/longhorn
       targetRevision: main
       kustomize: {}  # Use kustomization.yaml (manage resources only)

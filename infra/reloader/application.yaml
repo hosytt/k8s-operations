@@ -22,7 +22,7 @@ spec:
             requests:
               cpu: 10m
               memory: 32Mi
-    - repoURL: git@github.com:hosytt/k8s-operations.git
+    - repoURL: https://github.com/hosytt/k8s-operations.git
       path: infra/reloader
       targetRevision: main
   destination:
