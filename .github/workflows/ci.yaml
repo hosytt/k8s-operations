@@ -55,7 +55,8 @@ jobs:
       - name: Bump app version
         id: bump-version
         run: |
-          NEW_VERSION=$(pnpm --dir app version "${{ inputs.bump_type }}" --no-git-tag-version | tail -1 | sed 's/^v//')
+          cd app
+          NEW_VERSION=$(pnpm version "${{ inputs.bump_type }}" --no-git-tag-version | sed 's/^v//')
           echo "New version: ${NEW_VERSION}"
           echo "version=${NEW_VERSION}" >> "${GITHUB_OUTPUT}"
 
@@ -90,7 +91,7 @@ jobs:
         run: |
           NEW_TAG="${{ steps.bump-version.outputs.version }}"
           cd app/gitops
-          kustomize edit set image ghcr.io/${{ env.IMAGE_NAME }}:${NEW_TAG}
+          kustomize edit set image "ghcr.io/${{ env.IMAGE_NAME }}=ghcr.io/${{ env.IMAGE_NAME }}:${NEW_TAG}"
 
       - name: Create Git tag
         run: |
@@ -104,6 +105,10 @@ jobs:
           git config user.email "actions@github.com"
           git add app/package.json
           git add app/gitops/kustomization.yaml
+          if git diff --cached --quiet; then
+            echo "No manifest or version changes to commit."
+            exit 0
+          fi
           git commit -m "release(app): ${{ steps.bump-version.outputs.version }}"
           git fetch origin main --no-tags
           git rebase origin/main
