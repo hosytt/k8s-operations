@@ -6,4 +6,4 @@ resources:
 images:
 - name: ghcr.io/hosytt/k8s-operations-app
   newName: ghcr.io/hosytt/k8s-operations-app
-  newTag: 0.0.2
+  newTag: 0.0.3
