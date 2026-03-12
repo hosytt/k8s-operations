@@ -189,11 +189,7 @@ kubectl -n argo-cd get secret argocd-initial-admin-secret \
   -o jsonpath="{.data.password}" | base64 -d
 ```
 
-Argo CD에 Git 저장소를 추가할 때는 `infra/argo-cd/repository.yaml`을 적용합니다.
-
-```bash
-kubectl apply -f infra/argo-cd/repository.yaml
-```
+이 저장소는 HTTPS repoURL을 사용하므로(공개 저장소 기준) 별도 repository Secret 없이 동작합니다.
 
 GitOps 부트스트랩은 `infra/app-project.yaml`부터 적용합니다.
 
@@ -254,5 +250,5 @@ kubectl apply -f app/gitops/application.yaml
 
 이미지 태그는 `app/gitops/kustomization.yaml`의 `images.newTag`로 관리합니다.
 
-- 빌드/푸시: `.github/workflows/build-app-image.yaml`
-- 태그 자동 반영 커밋: `.github/workflows/update-gitops-image-tag.yaml`
+- CI 파이프라인: `.github/workflows/ci.yaml`
+- 기능: 이미지 빌드/푸시 + `kustomization.yaml` 태그 업데이트 + 커밋/푸시
