@@ -1,7 +1,3 @@
-# Kubernetes Node Setup (Manual)
-
-수동으로 Kubernetes 노드를 구성할 때 사용하는 설치/초기화 가이드입니다.
-
 ## 1) 사전 준비
 
 - OS: Ubuntu 계열
