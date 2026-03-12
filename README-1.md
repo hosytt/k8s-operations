@@ -243,3 +243,16 @@ kubectl apply -f infra/hpa-demo/application.yaml
 kubectl run -it --rm loadgen -n hpa-demo --image=busybox:1.36 --restart=Never -- \
   /bin/sh -c 'while true; do wget -q -O- http://hpa-demo; done'
 ```
+
+## 10) NestJS 앱 GitOps 배포
+
+`app/`은 pnpm 기반 NestJS 프로젝트이며, 배포 매니페스트는 `app/gitops/`에 있습니다.
+
+```bash
+kubectl apply -f app/gitops/application.yaml
+```
+
+이미지 태그는 `app/gitops/kustomization.yaml`의 `images.newTag`로 관리합니다.
+
+- 빌드/푸시: `.github/workflows/build-app-image.yaml`
+- 태그 자동 반영 커밋: `.github/workflows/update-gitops-image-tag.yaml`

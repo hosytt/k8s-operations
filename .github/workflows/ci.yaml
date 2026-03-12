@@ -1,0 +1,123 @@
+name: Build and Push
+run-name: "Deploy app (${{ inputs.bump_type }})"
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: "Version bump type"
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-app
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify branch security
+        run: |
+          if [ "${{ github.ref }}" != "refs/heads/main" ]; then
+            echo "Error: This workflow should only run from main branch"
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install app dependencies
+        run: pnpm --dir app install --frozen-lockfile
+
+      - name: Bump app version
+        id: bump-version
+        run: |
+          NEW_VERSION=$(pnpm --dir app version "${{ inputs.bump_type }}" --no-git-tag-version | tail -1 | sed 's/^v//')
+          echo "New version: ${NEW_VERSION}"
+          echo "version=${NEW_VERSION}" >> "${GITHUB_OUTPUT}"
+
+      - name: Log in to Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ steps.bump-version.outputs.version }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app
+          file: ./app/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Install kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Update Kubernetes manifest
+        run: |
+          NEW_TAG="${{ steps.bump-version.outputs.version }}"
+          cd app/gitops
+          kustomize edit set image ghcr.io/${{ env.IMAGE_NAME }}:${NEW_TAG}
+
+      - name: Create Git tag
+        run: |
+          TAG_NAME="app/${{ steps.bump-version.outputs.version }}"
+          git tag "${TAG_NAME}"
+          git push origin "${TAG_NAME}"
+
+      - name: Commit and push all changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add app/package.json
+          git add app/gitops/kustomization.yaml
+          git commit -m "release(app): ${{ steps.bump-version.outputs.version }}"
+          git fetch origin main --no-tags
+          git rebase origin/main
+          git push origin HEAD:main
+
+      - name: Job Summary
+        run: |
+          echo "## Deployment Summary" >> "${GITHUB_STEP_SUMMARY}"
+          echo "" >> "${GITHUB_STEP_SUMMARY}"
+          echo "| Item | Value |" >> "${GITHUB_STEP_SUMMARY}"
+          echo "|------|-------|" >> "${GITHUB_STEP_SUMMARY}"
+          echo "| **Service** | \`app\` |" >> "${GITHUB_STEP_SUMMARY}"
+          echo "| **Version** | \`${{ steps.bump-version.outputs.version }}\` |" >> "${GITHUB_STEP_SUMMARY}"
+          echo "| **Bump Type** | \`${{ inputs.bump_type }}\` |" >> "${GITHUB_STEP_SUMMARY}"
+          echo "| **Image** | \`ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.bump-version.outputs.version }}\` |" >> "${GITHUB_STEP_SUMMARY}"
+          echo "| **Git Tag** | \`app/${{ steps.bump-version.outputs.version }}\` |" >> "${GITHUB_STEP_SUMMARY}"
+          echo "| **Commit SHA** | \`${{ github.sha }}\` |" >> "${GITHUB_STEP_SUMMARY}"
