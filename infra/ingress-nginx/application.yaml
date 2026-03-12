@@ -20,13 +20,6 @@ spec:
             dnsPolicy: ClusterFirstWithHostNet
             service:
               enabled: false
-            resources:
-              requests:
-                cpu: 2000m
-                memory: 2Gi
-              limits:
-                cpu: "4000m"
-                memory: 4Gi
             config:
               use-forwarded-headers: "true"
               log-format-escape-json: "true"
