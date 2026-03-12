@@ -239,7 +239,7 @@ kubectl apply -f infra/hpa-demo/application.yaml
 부하 테스트(스케일링 확인) 예시:
 
 ```bash
-# 간단한 부하 생성용 Pod 실행
-kubectl run -it --rm loadgen --image=busybox:1.36 --restart=Never -- \
+# 간단한 부하 생성용 Pod 실행 (hpa-demo 네임스페이스)
+kubectl run -it --rm loadgen -n hpa-demo --image=busybox:1.36 --restart=Never -- \
   /bin/sh -c 'while true; do wget -q -O- http://hpa-demo; done'
 ```
