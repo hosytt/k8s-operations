@@ -121,6 +121,10 @@ sudo kubeadm init \
 
 ### 3-1) Helm 설치 (master)
 
+Helm은 Kubernetes용 패키지 매니저입니다.  
+복잡한 매니페스트를 Chart 단위로 설치/업그레이드/롤백할 수 있어
+초기 부트스트랩(예: Calico, Argo CD)에서 자주 사용합니다.
+
 ```bash
 sudo apt-get install curl gpg apt-transport-https --yes
 curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
