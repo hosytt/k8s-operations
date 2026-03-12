@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nestjs-app-ingress
+  namespace: nestjs-app
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: app.test.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nestjs-app
+                port:
+                  number: 80
