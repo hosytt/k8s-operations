@@ -14,7 +14,7 @@ spec:
     kustomize: {}
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: hpa-demo
   syncPolicy:
     automated:
       prune: true
