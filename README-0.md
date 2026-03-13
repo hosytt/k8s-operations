@@ -92,6 +92,12 @@ Pod를 안정적으로 관리하는 리소스입니다.
 - 업데이트 전략(롤링 업데이트) 관리
 - 장애 시 자동 재생성
 
+비슷한 워크로드 리소스와의 차이(가볍게):
+
+- **Deployment**: 일반 stateless 앱(웹/API)에 가장 많이 사용
+- **StatefulSet**: Pod 이름/스토리지 순서를 보장해야 하는 stateful 앱(DB, 메시지 큐 등)에 사용
+- **DaemonSet**: 모든 노드(또는 특정 노드 그룹)마다 1개씩 Pod를 배치할 때 사용(로그 수집기, 모니터링 에이전트 등)
+
 ### Service
 
 Pod 앞단의 고정된 접근 지점입니다.  
@@ -491,3 +497,11 @@ kubectl get deploy <deploy-name> -n <namespace> -o yaml
 6. GitOps(Argo CD, Flux)
 
 이 순서대로 가면 "왜 이런 도구가 필요한지"가 자연스럽게 연결됩니다.
+
+	•	Pod IP를 직접 쓰면 왜 불안정할까?
+	•	Deployment 없이 Pod만 직접 만들면 뭐가 힘들까?
+	•	Service는 Pod를 어떻게 찾을까?
+	•	Ingress가 있으면 Service는 왜 또 필요할까?
+	•	Helm은 YAML을 없애주는 도구일까, 아니면 YAML을 만들기 쉽게 해주는 도구일까?
+	•	kubeadm init 후 바로 모든 게 되는 게 아니라 CNI가 왜 꼭 필요할까?
+	•	왜 나중에는 kubectl apply보다 GitOps가 더 낫다고 할까?
